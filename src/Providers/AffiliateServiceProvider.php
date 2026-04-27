@@ -19,10 +19,10 @@ final class AffiliateServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'affiliate');
+        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'affiliate');
 
         $this->publishes([
-            __DIR__ . '/../../lang' => $this->app->langPath('vendor/affiliate'),
+            __DIR__ . '/../../resources/lang' => $this->app->langPath('vendor/affiliate'),
         ], 'affiliate-lang');
 
         Event::subscribe(AffiliateSubscriber::class);
