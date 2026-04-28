@@ -4,26 +4,46 @@ declare(strict_types=1);
 
 namespace Misaf\VendraAffiliate\Providers;
 
+use Filament\Panel;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\ServiceProvider;
+use Misaf\VendraAffiliate\AffiliatePlugin;
 use Misaf\VendraAffiliate\Listeners\AffiliateSubscriber;
 use Misaf\VendraAffiliate\Services\AffiliateService;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-final class AffiliateServiceProvider extends ServiceProvider
+final class AffiliateServiceProvider extends PackageServiceProvider
 {
-    public function register(): void
+    public function configurePackage(Package $package): void
     {
-        $this->app->bind('affiliate-service', fn(Application $app) => new AffiliateService());
+        $package
+            ->name('vendra-affiliate')
+            ->hasTranslations()
+            ->hasMigration('create_affiliates_table')
+            ->hasInstallCommand(function (InstallCommand $command): void {
+                $command->askToStarRepoOnGitHub('misaf/vendra-affiliate');
+            });
     }
 
-    public function boot(): void
+    public function packageRegistered(): void
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'affiliate');
+        $this->app->bind('affiliate-service', fn(Application $app) => new AffiliateService());
 
-        $this->publishes([
-            __DIR__ . '/../../resources/lang' => $this->app->langPath('vendor/affiliate'),
-        ], 'affiliate-lang');
+        Panel::configureUsing(function (Panel $panel): void {
+            if ('admin' !== $panel->getId()) {
+                return;
+            }
+
+            $panel->plugin(AffiliatePlugin::make());
+        });
+    }
+
+    public function packageBooted(): void
+    {
+        AboutCommand::add('Vendra Affiliate', fn() => ['Version' => 'dev-master']);
 
         Event::subscribe(AffiliateSubscriber::class);
     }
