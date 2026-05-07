@@ -22,7 +22,9 @@ final class AffiliateServiceProvider extends PackageServiceProvider
         $package
             ->name('vendra-affiliate')
             ->hasTranslations()
-            ->hasMigration('create_affiliates_table')
+            ->hasMigrations([
+                'create_affiliates_table'
+            ])
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-affiliate');
             });
