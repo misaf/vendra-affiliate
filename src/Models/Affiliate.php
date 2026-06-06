@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Misaf\VendraAffiliate\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraAffiliate\Database\Factories\AffiliateFactory;
 use Misaf\VendraAffiliate\Facades\AffiliateService;
 use Misaf\VendraTenant\Traits\BelongsToTenant;
 use Misaf\VendraUser\Traits\BelongsToUser;
-use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Sluggable\SlugOptions;
 
@@ -31,10 +33,13 @@ use Spatie\Sluggable\SlugOptions;
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  */
+#[Fillable(['user_id', 'name', 'description', 'slug', 'commission_percent', 'is_processing', 'status'])]
+#[Hidden(['tenant_id'])]
 final class Affiliate extends Model
 {
     use BelongsToTenant;
     use BelongsToUser;
+    use HasDefaultActivityLogOptions;
     /** @use HasFactory<AffiliateFactory> */
     use HasFactory;
     use LogsActivity;
@@ -44,37 +49,31 @@ final class Affiliate extends Model
     /**
      * @var array<string, string>
      */
-    protected $casts = [
-        'id'                 => 'integer',
-        'tenant_id'          => 'integer',
-        'user_id'            => 'integer',
-        'name'               => 'string',
-        'description'        => 'string',
-        'slug'               => 'string',
-        'commission_percent' => 'integer',
-        'is_processing'      => 'boolean',
-        'status'             => 'boolean',
-    ];
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'id'                 => 'integer',
+            'tenant_id'          => 'integer',
+            'user_id'            => 'integer',
+            'name'               => 'string',
+            'description'        => 'string',
+            'slug'               => 'string',
+            'commission_percent' => 'integer',
+            'is_processing'      => 'boolean',
+            'status'             => 'boolean',
+        ];
+    }
 
     /**
      * @var list<string>
      */
-    protected $fillable = [
-        'user_id',
-        'name',
-        'description',
-        'slug',
-        'commission_percent',
-        'is_processing',
-        'status',
-    ];
 
     /**
      * @var list<string>
      */
-    protected $hidden = [
-        'tenant_id',
-    ];
 
     /**
      * @return void
@@ -95,10 +94,5 @@ final class Affiliate extends Model
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug')
             ->preventOverwrite();
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()->logFillable()->logExcept(['id']);
     }
 }

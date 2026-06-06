@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Misaf\VendraAffiliate\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraAffiliate\Database\Factories\AffiliateUserFactory;
 use Misaf\VendraTenant\Traits\BelongsToTenant;
-use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
@@ -23,9 +25,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  */
+#[Fillable(['affiliate_id', 'user_id', 'commission_earned'])]
+#[Hidden(['tenant_id'])]
 final class AffiliateUser extends Model
 {
     use BelongsToTenant;
+    use HasDefaultActivityLogOptions;
     /** @use HasFactory<AffiliateUserFactory> */
     use HasFactory;
     use LogsActivity;
@@ -36,32 +41,26 @@ final class AffiliateUser extends Model
     /**
      * @var array<string, string>
      */
-    protected $casts = [
-        'id'                => 'integer',
-        'tenant_id'         => 'integer',
-        'affiliate_id'      => 'integer',
-        'user_id'           => 'integer',
-        'commission_earned' => 'integer',
-    ];
-
     /**
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $fillable = [
-        'affiliate_id',
-        'user_id',
-        'commission_earned',
-    ];
-
-    /**
-     * @var list<string>
-     */
-    protected $hidden = [
-        'tenant_id',
-    ];
-
-    public function getActivitylogOptions(): LogOptions
+    protected function casts(): array
     {
-        return LogOptions::defaults()->logFillable()->logExcept(['id']);
+        return [
+            'id'                => 'integer',
+            'tenant_id'         => 'integer',
+            'affiliate_id'      => 'integer',
+            'user_id'           => 'integer',
+            'commission_earned' => 'integer',
+        ];
     }
+
+    /**
+     * @var list<string>
+     */
+
+    /**
+     * @var list<string>
+     */
+
 }
