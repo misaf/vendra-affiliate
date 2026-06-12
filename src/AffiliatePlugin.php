@@ -9,9 +9,11 @@ use Filament\Panel;
 
 final class AffiliatePlugin implements Plugin
 {
+    public const string ID = 'vendra-affiliate';
+
     public function getId(): string
     {
-        return 'vendra-affiliate';
+        return self::ID;
     }
 
     public static function make(): static
