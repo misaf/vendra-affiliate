@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraAffiliate\Database\Factories;
 
+use Illuminate\Database\Eloquent\Factories\Attributes\UseModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Misaf\VendraAffiliate\Models\Affiliate;
 use Misaf\VendraAffiliate\Models\AffiliateUser;
@@ -13,13 +14,9 @@ use Misaf\VendraUser\Models\User;
 /**
  * @extends Factory<AffiliateUser>
  */
+#[UseModel(AffiliateUser::class)]
 final class AffiliateUserFactory extends Factory
 {
-    /**
-     * @var class-string<AffiliateUser>
-     */
-    protected $model = AffiliateUser::class;
-
     /**
      * @return array<string, mixed>
      */
