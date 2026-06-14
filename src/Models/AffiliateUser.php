@@ -6,6 +6,7 @@ namespace Misaf\VendraAffiliate\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,10 +28,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
  */
 #[Fillable(['affiliate_id', 'user_id', 'commission_earned'])]
 #[Hidden(['tenant_id'])]
+#[UseFactory(AffiliateUserFactory::class)]
 final class AffiliateUser extends Model
 {
     use BelongsToTenant;
     use HasDefaultActivityLogOptions;
+
     /** @use HasFactory<AffiliateUserFactory> */
     use HasFactory;
     use LogsActivity;
