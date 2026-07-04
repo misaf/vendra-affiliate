@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraAffiliate\Database\Factories\AffiliateFactory;
 use Misaf\VendraAffiliate\Facades\AffiliateService;
+use Misaf\VendraAffiliate\Traits\HasAffiliateUser;
 use Misaf\VendraTenant\Traits\BelongsToTenant;
 use Misaf\VendraUser\Traits\BelongsToUser;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -41,12 +42,12 @@ final class Affiliate extends Model
 {
     use BelongsToTenant;
     use BelongsToUser;
-    use HasDefaultActivityLogOptions;
+    use HasAffiliateUser;
 
+    use HasDefaultActivityLogOptions;
     /** @use HasFactory<AffiliateFactory> */
     use HasFactory;
     use LogsActivity;
-    use \Misaf\Affiliate\Traits\HasAffiliateUser;
     use SoftDeletes;
 
     /**

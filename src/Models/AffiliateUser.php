@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraAffiliate\Database\Factories\AffiliateUserFactory;
+use Misaf\VendraAffiliate\Traits\BelongsToAffiliate;
 use Misaf\VendraTenant\Traits\BelongsToTenant;
+use Misaf\VendraUser\Traits\BelongsToUser;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
@@ -31,14 +33,14 @@ use Spatie\Activitylog\Traits\LogsActivity;
 #[UseFactory(AffiliateUserFactory::class)]
 final class AffiliateUser extends Model
 {
+    use BelongsToAffiliate;
     use BelongsToTenant;
-    use HasDefaultActivityLogOptions;
 
+    use BelongsToUser;
+    use HasDefaultActivityLogOptions;
     /** @use HasFactory<AffiliateUserFactory> */
     use HasFactory;
     use LogsActivity;
-    use \Misaf\Affiliate\Traits\BelongsToAffiliate;
-    use \Misaf\User\Traits\BelongsToUser;
     use SoftDeletes;
 
     /**
