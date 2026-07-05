@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
 use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraAffiliate\Database\Factories\AffiliateUserFactory;
 use Misaf\VendraAffiliate\Traits\BelongsToAffiliate;
-use Misaf\VendraTenant\Traits\BelongsToTenant;
+use Misaf\VendraSupport\Traits\BelongsToTenant;
 use Misaf\VendraUser\Traits\BelongsToUser;
 use Spatie\Activitylog\Traits\LogsActivity;
 

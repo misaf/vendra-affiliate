@@ -16,7 +16,7 @@ use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraAffiliate\Database\Factories\AffiliateFactory;
 use Misaf\VendraAffiliate\Facades\AffiliateService;
 use Misaf\VendraAffiliate\Traits\HasAffiliateUser;
-use Misaf\VendraTenant\Traits\BelongsToTenant;
+use Misaf\VendraSupport\Traits\BelongsToTenant;
 use Misaf\VendraUser\Traits\BelongsToUser;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Sluggable\SlugOptions;
