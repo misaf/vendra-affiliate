@@ -32,7 +32,8 @@
 		"nunomaduro/collision": "^8.0",
 		"orchestra/testbench": "^11.0",
 		"pestphp/pest": "^4.0",
-		"pestphp/pest-plugin-laravel": "^4.0"
+		"pestphp/pest-plugin-laravel": "^4.0",
+		"phpstan/extension-installer": "^1.4"
 	},
 	"minimum-stability": "stable",
 	"prefer-stable": true,
@@ -51,7 +52,8 @@
 	"config": {
 		"allow-plugins": {
 			"pestphp/pest-plugin": true,
-			"php-http/discovery": true
+			"php-http/discovery": true,
+			"phpstan/extension-installer": true
 		},
 		"optimize-autoloader": true,
 		"preferred-install": "dist",
