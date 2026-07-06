@@ -11,12 +11,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraAffiliate\Database\Factories\AffiliateUserFactory;
 use Misaf\VendraAffiliate\Traits\BelongsToAffiliate;
+use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Traits\BelongsToTenant;
 use Misaf\VendraUser\Traits\BelongsToUser;
-use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property int $id
@@ -31,16 +30,14 @@ use Spatie\Activitylog\Traits\LogsActivity;
 #[Fillable(['affiliate_id', 'user_id', 'commission_earned'])]
 #[Hidden(['tenant_id'])]
 #[UseFactory(AffiliateUserFactory::class)]
-final class AffiliateUser extends Model
+final class AffiliateUser extends Model implements ShouldLogActivity
 {
     use BelongsToAffiliate;
     use BelongsToTenant;
 
     use BelongsToUser;
-    use HasDefaultActivityLogOptions;
     /** @use HasFactory<AffiliateUserFactory> */
     use HasFactory;
-    use LogsActivity;
     use SoftDeletes;
 
     /**
