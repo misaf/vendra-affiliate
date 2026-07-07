@@ -14,7 +14,7 @@ final class ListAffiliates extends ListRecords
 
     public function getBreadcrumb(): string
     {
-        return self::$breadcrumb ?? __('filament-panels::resources/pages/list-records.breadcrumb') . ' ' . __('navigation.affiliate');
+        return self::$breadcrumb ?? __('filament-panels::resources/pages/list-records.breadcrumb') . ' ' . __('vendra-affiliate::navigation.affiliate');
     }
 
     protected function getHeaderActions(): array

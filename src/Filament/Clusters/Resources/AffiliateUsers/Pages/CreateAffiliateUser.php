@@ -13,6 +13,6 @@ final class CreateAffiliateUser extends CreateRecord
 
     public function getBreadcrumb(): string
     {
-        return self::$breadcrumb ?? __('filament-panels::resources/pages/create-record.breadcrumb') . ' ' . __('navigation.affiliate_user');
+        return self::$breadcrumb ?? __('filament-panels::resources/pages/create-record.breadcrumb') . ' ' . __('vendra-affiliate::navigation.affiliate_user');
     }
 }

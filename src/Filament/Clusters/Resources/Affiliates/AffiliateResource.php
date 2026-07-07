@@ -51,7 +51,7 @@ use Misaf\VendraAffiliate\Filament\Clusters\Resources\Affiliates\Pages\ListAffil
 use Misaf\VendraAffiliate\Filament\Clusters\Resources\Affiliates\Pages\ViewAffiliate;
 use Misaf\VendraAffiliate\Filament\Clusters\Resources\AffiliateUsers\RelationManagers\AffiliateUserRelationManager;
 use Misaf\VendraAffiliate\Models\Affiliate;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraSupport\Support\TenantAwareness;
 
 final class AffiliateResource extends Resource
 {
@@ -68,27 +68,27 @@ final class AffiliateResource extends Resource
 
     public static function getBreadcrumb(): string
     {
-        return __('navigation.affiliate');
+        return __('vendra-affiliate::navigation.affiliate');
     }
 
     public static function getModelLabel(): string
     {
-        return __('navigation.affiliate');
+        return __('vendra-affiliate::navigation.affiliate');
     }
 
     public static function getNavigationGroup(): string
     {
-        return __('navigation.affiliate_management');
+        return __('vendra-affiliate::navigation.affiliate_management');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.affiliate');
+        return __('vendra-affiliate::navigation.affiliate');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('navigation.affiliate');
+        return __('vendra-affiliate::navigation.affiliate');
     }
 
     /**
@@ -120,7 +120,7 @@ final class AffiliateResource extends Resource
             ->components([
                 Select::make('user_id')
                     ->columnSpanFull()
-                    ->label(__('form.username'))
+                    ->label(__('vendra-user::attributes.username'))
                     ->native(false)
                     ->preload()
                     ->relationship('user', 'username')
@@ -135,14 +135,12 @@ final class AffiliateResource extends Resource
                     })
                     ->autofocus()
                     ->columnSpan(['lg' => 1])
-                    ->label(__('form.name'))
+                    ->label(__('vendra-affiliate::attributes.name'))
                     ->live(onBlur: true)
                     ->required()
                     ->unique(
-                        modifyRuleUsing: function (Unique $rule): void {
-                            $rule->where('tenant_id', Tenant::current()->id)
-                                ->withoutTrashed();
-                        },
+                        modifyRuleUsing: fn(Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
+                            ->withoutTrashed(),
                     ),
 
                 SlugTextInput::make('slug')
@@ -154,7 +152,7 @@ final class AffiliateResource extends Resource
                     ->columnSpanFull()
                     ->default(20)
                     ->extraAttributes(['dir' => 'ltr'])
-                    ->label(__('affiliate.commission_percent'))
+                    ->label(__('vendra-affiliate::attributes.commission_percent'))
                     ->live(onBlur: true)
                     ->maxValue(50)
                     ->minValue(1)
@@ -174,7 +172,7 @@ final class AffiliateResource extends Resource
 
                 ModelLinkColumn::make('user.username')
                     ->alignCenter()
-                    ->label(__('form.username'))
+                    ->label(__('vendra-user::attributes.username'))
                     ->searchable(),
                 TextColumn::make('slug')
                     ->alignCenter()
@@ -182,18 +180,18 @@ final class AffiliateResource extends Resource
                     ->copyableState(function (string $state): string {
                         return route('filament.user.auth.register', ['affiliate' => $state]);
                     })
-                    ->copyMessage(__('Link copied to clipboard'))
+                    ->copyMessage(__('vendra-affiliate::messages.link_copied'))
                     ->copyMessageDuration(1500)
                     ->fontFamily(FontFamily::Mono)
                     ->formatStateUsing(function (string $state): string {
                         return route('filament.user.auth.register', ['affiliate' => $state]);
                     })
-                    ->label(__('form.link'))
+                    ->label(__('vendra-affiliate::attributes.link'))
                     ->searchable()
                     ->wrap(),
                 TextColumn::make('commission_percent')
                     ->alignCenter()
-                    ->label(__('affiliate.commission_percent'))
+                    ->label(__('vendra-affiliate::attributes.commission_percent'))
                     ->numeric(locale: 'en', maxDecimalPlaces: 0)
                     ->sortable()
                     ->suffix('%')
@@ -209,7 +207,7 @@ final class AffiliateResource extends Resource
                                         }
                                     })
                                     ->extraAttributes(['dir' => 'ltr'])
-                                    ->label(__('affiliate.commission_percent'))
+                                    ->label(__('vendra-affiliate::attributes.commission_percent'))
                                     ->live(onBlur: true)
                                     ->maxValue(50)
                                     ->minValue(1)
@@ -219,12 +217,12 @@ final class AffiliateResource extends Resource
                                 $record->commission_percent = $data['commission_percent'];
                                 $record->save();
                             })
-                            ->label(__('بروزرسانی کمیسیون')),
+                            ->label(__('vendra-affiliate::messages.update_commission')),
                     ),
                 IconColumn::make('is_processing')
                     ->alignCenter()
                     ->boolean()
-                    ->label(__('affiliate.is_processing'))
+                    ->label(__('vendra-affiliate::attributes.is_processing'))
                     ->sortable(),
                 StatusToggleColumn::make('status'),
                 CreatedAtTextColumn::make('created_at'),
@@ -238,9 +236,9 @@ final class AffiliateResource extends Resource
                             TextConstraint::make('slug'),
                             NumberConstraint::make('commission_percent'),
                             DateConstraint::make('created_at')
-                                ->label(__('form.created_at')),
+                                ->label(__('vendra-affiliate::attributes.created_at')),
                             DateConstraint::make('updated_at')
-                                ->label(__('form.updated_at')),
+                                ->label(__('vendra-affiliate::attributes.updated_at')),
                         ]),
                 ],
                 layout: FiltersLayout::AboveContentCollapsible,
@@ -260,7 +258,7 @@ final class AffiliateResource extends Resource
                                 ->execute($record);
                         })
                         ->icon('heroicon-o-currency-dollar')
-                        ->label(__('دریافت کمیسیون'))
+                        ->label(__('vendra-affiliate::messages.get_commission'))
                         ->requiresConfirmation()
                         ->disabled(function (Affiliate $record): bool {
                             return $record->is_processing;

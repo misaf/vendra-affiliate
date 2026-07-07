@@ -18,17 +18,17 @@ final class AffiliateUserRelationManager extends RelationManager
 
     public static function getModelLabel(): string
     {
-        return __('navigation.affiliate_user');
+        return __('vendra-affiliate::navigation.affiliate_user');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('navigation.affiliate_user');
+        return __('vendra-affiliate::navigation.affiliate_user');
     }
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('navigation.affiliate_user');
+        return __('vendra-affiliate::navigation.affiliate_user');
     }
 
     public function isReadOnly(): bool

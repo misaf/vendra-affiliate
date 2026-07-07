@@ -47,27 +47,27 @@ final class AffiliateUserResource extends Resource
 
     public static function getBreadcrumb(): string
     {
-        return __('navigation.affiliate_user');
+        return __('vendra-affiliate::navigation.affiliate_user');
     }
 
     public static function getModelLabel(): string
     {
-        return __('navigation.affiliate_user');
+        return __('vendra-affiliate::navigation.affiliate_user');
     }
 
     public static function getNavigationGroup(): string
     {
-        return __('navigation.affiliate_management');
+        return __('vendra-affiliate::navigation.affiliate_management');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.affiliate_user');
+        return __('vendra-affiliate::navigation.affiliate_user');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('navigation.affiliate_user');
+        return __('vendra-affiliate::navigation.affiliate_user');
     }
 
     /**
@@ -88,7 +88,7 @@ final class AffiliateUserResource extends Resource
             ->components([
                 Select::make('affiliate_id')
                     ->columnSpanFull()
-                    ->label(__('model.affiliate'))
+                    ->label(__('vendra-affiliate::navigation.affiliate'))
                     ->native(false)
                     ->preload()
                     ->relationship('affiliate', 'name')
@@ -102,7 +102,7 @@ final class AffiliateUserResource extends Resource
 
                 Select::make('user_id')
                     ->columnSpanFull()
-                    ->label(__('model.user'))
+                    ->label(__('vendra-user::navigation.user'))
                     ->native(false)
                     ->preload()
                     ->relationship('user', 'username')
@@ -121,13 +121,13 @@ final class AffiliateUserResource extends Resource
                     ->rowIndex(),
 
                 ModelLinkColumn::make('affiliate.user.username')
-                    ->label(__('model.affiliate'))
+                    ->label(__('vendra-affiliate::navigation.affiliate'))
                     ->searchable(),
                 ModelLinkColumn::make('user.username')
-                    ->label(__('model.user'))
+                    ->label(__('vendra-user::navigation.user'))
                     ->searchable(),
                 TextColumn::make('commission_earned')
-                    ->label(__('affiliate.commission_earned'))
+                    ->label(__('vendra-affiliate::attributes.commission_earned'))
                     ->numeric(locale: 'en', maxDecimalPlaces: 0)
                     ->sortable(),
                 CreatedAtTextColumn::make('created_at'),
@@ -141,11 +141,11 @@ final class AffiliateUserResource extends Resource
                     QueryBuilder::make()
                         ->constraints([
                             NumberConstraint::make('commission_earned')
-                                ->label(__('affiliate.commission_earned')),
+                                ->label(__('vendra-affiliate::attributes.commission_earned')),
                             DateConstraint::make('created_at')
-                                ->label(__('form.created_at')),
+                                ->label(__('vendra-affiliate::attributes.created_at')),
                             DateConstraint::make('updated_at')
-                                ->label(__('form.updated_at')),
+                                ->label(__('vendra-affiliate::attributes.updated_at')),
                         ]),
                 ],
                 layout: FiltersLayout::AboveContentCollapsible,

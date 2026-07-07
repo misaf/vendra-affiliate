@@ -19,7 +19,7 @@ final class AffiliatesCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.affiliate');
+        return __('vendra-affiliate::navigation.affiliate');
     }
 
     public static function getClusterBreadcrumb(): string

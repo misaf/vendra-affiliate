@@ -6,9 +6,10 @@ namespace Misaf\VendraAffiliate\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Attributes\UseModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Misaf\VendraAffiliate\Models\Affiliate;
 use Misaf\VendraAffiliate\Models\AffiliateUser;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraSupport\Support\TenantAwareness;
 use Misaf\VendraUser\Models\User;
 
 /**
@@ -23,7 +24,6 @@ final class AffiliateUserFactory extends Factory
     public function definition(): array
     {
         return [
-            'tenant_id'         => Tenant::factory(),
             'affiliate_id'      => Affiliate::factory(),
             'user_id'           => User::factory(),
             'commission_earned' => 0,
@@ -31,20 +31,19 @@ final class AffiliateUserFactory extends Factory
     }
 
     /**
-     * @param Tenant $tenant
-     * @return static
+     * No-op without a tenant provider, since there is no `tenant_id` column.
      */
-    public function forTenant(Tenant $tenant): static
+    public function forTenant(Model|int $tenant): static
     {
+        if ( ! TenantAwareness::enabled()) {
+            return $this;
+        }
+
         return $this->state(fn(): array => [
-            'tenant_id' => $tenant->id,
+            'tenant_id' => $tenant instanceof Model ? $tenant->getKey() : $tenant,
         ]);
     }
 
-    /**
-     * @param User $user
-     * @return static
-     */
     public function forUser(User $user): static
     {
         return $this->state(fn(): array => [

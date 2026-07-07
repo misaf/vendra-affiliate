@@ -16,11 +16,23 @@ final class AffiliateService
 
     public function generateName(): string
     {
-        return mb_substr(str_shuffle(str_repeat(self::NAME_CHARACTERS, self::NAME_LENGTH)), 0, self::NAME_LENGTH);
+        return $this->randomString(self::NAME_CHARACTERS, self::NAME_LENGTH);
     }
 
     public function generateSlug(): string
     {
-        return mb_substr(str_shuffle(str_repeat(self::SLUG_CHARACTERS, self::SLUG_LENGTH)), 0, self::SLUG_LENGTH);
+        return $this->randomString(self::SLUG_CHARACTERS, self::SLUG_LENGTH);
+    }
+
+    private function randomString(string $characters, int $length): string
+    {
+        $maxIndex = mb_strlen($characters) - 1;
+        $result = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $result .= $characters[random_int(0, $maxIndex)];
+        }
+
+        return $result;
     }
 }
