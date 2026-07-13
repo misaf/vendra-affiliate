@@ -1,6 +1,5 @@
 {
     "name": "misaf/vendra-affiliate",
-    "version": "0.0.7",
     "description": "Affiliate and referral management system with commission tracking and user referral capabilities",
     "keywords": [
         "laravel",
@@ -50,13 +49,13 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "0.0.x-dev"
+        },
         "laravel": {
             "providers": [
                 "Misaf\\VendraAffiliate\\Providers\\AffiliateServiceProvider"
             ]
-        },
-        "branch-alias": {
-            "dev-master": "13.x-dev"
         }
     },
     "scripts": {

@@ -1,6 +1,6 @@
 ---
 name: vendra-affiliate-development
-description: "Use this skill when creating, modifying, reviewing, or testing the Vendra Affiliate module in app-modules/vendra-affiliate, or when creating future affiliate-like Filament/domain modules. Trigger for `Affiliate`, `AffiliateUser` models, vendra-affiliate migrations, factories, seeders, policies, permission enums, Filament resources, clusters, forms, tables, relation managers, translations, media collections, plugin/service provider wiring, and module configuration."
+description: "Use this skill when creating, modifying, reviewing, or testing the Vendra Affiliate module in packages/vendra-affiliate, or when creating future affiliate-like Filament/domain modules. Trigger for `Affiliate`, `AffiliateUser` models, vendra-affiliate migrations, factories, seeders, policies, permission enums, Filament resources, clusters, forms, tables, relation managers, translations, media collections, plugin/service provider wiring, and module configuration."
 ---
 
 # Vendra Affiliate
@@ -13,7 +13,7 @@ Before code changes, use Laravel Boost `application-info` and `search-docs` for 
 
 ## Module Boundary
 
-Treat `app-modules/vendra-affiliate` as the source of affiliate domain behavior and Filament admin UI.
+Treat `packages/vendra-affiliate` as the source of affiliate domain behavior and Filament admin UI.
 
 - Use namespace `Misaf\VendraAffiliate`.
 - Keep domain models, factories, seeders, policies, observers, console commands, Filament classes, config, migrations, translations, and tests inside this module.
@@ -73,5 +73,5 @@ Prefer focused Pest tests in the module.
 - Add or update unit tests for model contracts, policy permission coverage, resolver-derived tenant awareness, navigation/config behavior, and translation parity.
 - Keep Pest architecture tests in `tests/ArchTest.php`: the `php`, `security`, and `laravel` presets, plus an expectation that the module stays tenant-agnostic, e.g. `arch()->expect('Misaf\VendraAffiliate')->not->toUse('Misaf\VendraTenant')`.
 - Add feature or Livewire tests when changing Filament behavior with meaningful user-visible effects.
-- Run module checks from the package when possible: `composer --working-dir=app-modules/vendra-affiliate test` and `composer --working-dir=app-modules/vendra-affiliate analyse`.
+- Run module checks from the package when possible: `composer --working-dir=packages/vendra-affiliate test` and `composer --working-dir=packages/vendra-affiliate analyse`.
 - If PHP files changed, run Pint for the touched code: `vendor/bin/pint --dirty --format agent` from the host app, or the module formatter if working only inside the package.
