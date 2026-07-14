@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace Misaf\VendraAffiliate\Providers;
 
+use Composer\InstalledVersions;
+
 use Filament\Panel;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Console\AboutCommand;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Misaf\VendraAffiliate\AffiliatePlugin;
-use Misaf\VendraAffiliate\Listeners\AffiliateSubscriber;
+use Misaf\VendraAffiliate\Console\Commands\SeedCommand;
+use Misaf\VendraAffiliate\Listeners\RegistrationSubscriber;
+use Misaf\VendraAffiliate\Listeners\TransactionCommissionSubscriber;
 use Misaf\VendraAffiliate\Models\Affiliate;
-use Misaf\VendraAffiliate\Services\AffiliateService;
+use Misaf\VendraAffiliate\Models\AffiliateReferral;
+use Misaf\VendraAffiliate\Services\AffiliateCodeService;
 use Misaf\VendraSupport\Filament\Concerns\ResolvesConfiguredPanels;
+use Misaf\VendraSupport\Support\TenantSeeders;
 use Misaf\VendraUser\Models\User;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -27,10 +33,13 @@ final class AffiliateServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('vendra-affiliate')
+            ->hasConfigFile()
             ->hasTranslations()
             ->hasMigrations([
-                'create_affiliates_table'
+                'create_affiliates_table',
             ])
+            ->hasRoute('web')
+            ->hasCommands(SeedCommand::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-affiliate');
             });
@@ -38,10 +47,13 @@ final class AffiliateServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->bind('affiliate-service', fn(Application $app) => new AffiliateService());
+        $this->app->singleton(AffiliateCodeService::class);
 
         Panel::configureUsing(function (Panel $panel): void {
-            if ( ! $this->shouldRegisterOnPanel($panel->getId(), 'vendra-affiliate')) {
+            if (
+                ! $this->shouldRegisterOnPanel($panel->getId(), 'vendra-affiliate')
+                && ! in_array($panel->getId(), Config::array('vendra-affiliate.user_panels'), true)
+            ) {
                 return;
             }
 
@@ -51,20 +63,21 @@ final class AffiliateServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        AboutCommand::add('Vendra Affiliate', fn() => ['Version' => 'dev-master']);
+        $this->app->make(TenantSeeders::class)->register('vendra-affiliate:seed', priority: 75);
 
-        User::resolveRelationUsing('affiliates', fn(User $user): HasMany => $user->hasMany(Affiliate::class));
+        AboutCommand::add('Vendra Affiliate', fn() => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-affiliate')]);
 
-        Event::subscribe(AffiliateSubscriber::class);
-    }
+        Event::subscribe(RegistrationSubscriber::class);
+        Event::subscribe(TransactionCommissionSubscriber::class);
 
-    /**
-     * @return array<int, string>
-     */
-    public function provides(): array
-    {
-        return [
-            'affiliate-service',
-        ];
+        User::resolveRelationUsing(
+            'affiliate',
+            fn(User $user): HasOne => $user->hasOne(Affiliate::class),
+        );
+
+        User::resolveRelationUsing(
+            'affiliateReferral',
+            fn(User $user): HasOne => $user->hasOne(AffiliateReferral::class),
+        );
     }
 }
