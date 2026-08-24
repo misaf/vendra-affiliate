@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Misaf\VendraAffiliate\Tests\Unit;
+namespace Misaf\VendraAffiliate\Tests\Feature;
 
 use Misaf\VendraAffiliate\Models\Affiliate;
 use Misaf\VendraSupport\Capabilities\EloquentTagResolver;
