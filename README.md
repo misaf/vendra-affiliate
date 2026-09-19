@@ -15,11 +15,14 @@ stats widgets.
    self-referrals are ignored.
 4. Conversions credit `AffiliateCommission` ledger entries idempotently:
    - **Deposit** — a referred user's approved deposit credits
-     `commission_percent` of the amount; leaving the approved state reverses
-     the unpaid commission.
+     `commission_percent` of the amount when `TransactionApproved` fires.
+     Approval is final, so the commission is never reversed automatically.
    - **Signup** — a fixed bounty per attributed registration.
    - **Checkout** — host applications call `RecordCartConversionAction` from their
      checkout flow (vendra-cart has no checkout event yet).
+
+   Both the deposit and checkout conversions find the referrer through
+   `AffiliateReferral::forUser()`, and credit nothing when its affiliate is gone.
 5. `ProcessAffiliatePayoutAction` settles approved commissions atomically: it
    groups them into an `AffiliatePayout`, marks them paid, and credits the
    affiliate's default-currency wallet through an approved Commission

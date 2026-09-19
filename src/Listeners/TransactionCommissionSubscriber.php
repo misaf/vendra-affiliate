@@ -8,16 +8,16 @@ use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Queue\InteractsWithQueue;
 use Misaf\VendraAffiliate\Actions\CreditCommissionAction;
-use Misaf\VendraAffiliate\Enums\CommissionStatusEnum;
 use Misaf\VendraAffiliate\Enums\ConversionTypeEnum;
-use Misaf\VendraAffiliate\Models\AffiliateCommission;
+use Misaf\VendraAffiliate\Models\Affiliate;
 use Misaf\VendraAffiliate\Models\AffiliateReferral;
 use Misaf\VendraTransaction\Enums\TransactionTypeEnum;
-use Misaf\VendraTransaction\Models\Transaction;
-use Misaf\VendraTransaction\States\Approved;
+use Misaf\VendraTransaction\Events\TransactionApproved;
 
 /**
- * Credit a commission for a referred user's approved deposit, and reverse it if unapproved.
+ * Credit a commission for a referred user's approved deposit.
+ *
+ * Approval is final, so a credited commission is never reversed from here.
  */
 final class TransactionCommissionSubscriber implements ShouldQueueAfterCommit
 {
@@ -27,8 +27,10 @@ final class TransactionCommissionSubscriber implements ShouldQueueAfterCommit
         private readonly CreditCommissionAction $creditCommission,
     ) {}
 
-    public function transactionUpdated(Transaction $transaction): void
+    public function transactionApproved(TransactionApproved $event): void
     {
+        $transaction = $event->transaction;
+
         if ($transaction->transaction_type !== TransactionTypeEnum::Deposit) {
             return;
         }
@@ -37,38 +39,14 @@ final class TransactionCommissionSubscriber implements ShouldQueueAfterCommit
             return;
         }
 
-        if ($transaction->status instanceof Approved) {
-            $this->creditDeposit($transaction);
-
-            return;
-        }
-
-        $this->reverseDeposit($transaction);
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function subscribe(Dispatcher $events): array
-    {
-        return [
-            'eloquent.updated: '.Transaction::class => 'transactionUpdated',
-        ];
-    }
-
-    private function creditDeposit(Transaction $transaction): void
-    {
         $transaction->loadMissing('wallet');
 
-        $referral = AffiliateReferral::with('affiliate')
-            ->where('user_id', $transaction->wallet->user_id)
-            ->first();
+        $referral = AffiliateReferral::forUser($transaction->wallet->user_id);
+        $affiliate = $referral?->affiliate;
 
-        if (! $referral instanceof AffiliateReferral || $referral->affiliate === null) {
+        if (! $affiliate instanceof Affiliate) {
             return;
         }
-
-        $affiliate = $referral->affiliate;
 
         $this->creditCommission->execute(
             affiliate: $affiliate,
@@ -79,13 +57,13 @@ final class TransactionCommissionSubscriber implements ShouldQueueAfterCommit
         );
     }
 
-    private function reverseDeposit(Transaction $transaction): void
+    /**
+     * @return array<string, string>
+     */
+    public function subscribe(Dispatcher $events): array
     {
-        AffiliateCommission::query()->where('conversion_type', ConversionTypeEnum::Deposit)
-            ->where('source_type', $transaction->getMorphClass())
-            ->where('source_id', $transaction->getKey())
-            ->whereIn('status', [CommissionStatusEnum::Pending, CommissionStatusEnum::Approved])
-            ->whereNull('affiliate_payout_id')
-            ->update(['status' => CommissionStatusEnum::Reversed]);
+        return [
+            TransactionApproved::class => 'transactionApproved',
+        ];
     }
 }
